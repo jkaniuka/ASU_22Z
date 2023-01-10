@@ -110,7 +110,7 @@ for filename in os.listdir(temp_file_path):
 
 print("Changing permisions")
 for filename in os.listdir(temp_file_path):
-    subprocess.call(["chmod", "644", os.path.join(temp_file_path, filename)])
+    subprocess.call(["chmod", params["file_permissions"], os.path.join(temp_file_path, filename)])
 subprocess.call(["ls", "-l", "/home/jan/asu_new_x_dir"])
 
 
