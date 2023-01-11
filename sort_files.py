@@ -6,6 +6,7 @@
 # Warsaw University of Technology  
 #***************************************
 
+# Import necessary modules
 import os
 import sys
 import shutil
@@ -14,19 +15,25 @@ import configparser
 import subprocess
 from pathlib import Path
 
-
+# Start program
 print("The program has been launched ...")
 
+# Load configuration parameters from clean_files.ini file
 print("Loading parameters from config file")
 config = configparser.ConfigParser()		
 config.read("clean_files.ini")
 params = config['parameters']
+
+# Assign params to variables
 troublesome_characters = params["troublesome_characters"]
 substitute_char = params["substitute_char"]
 
+# Read command line args (list of directories to merged)
+# First arg is absolute path to X directory
+# Second arg is absolute path to Y1 directory
+# Third arg is absolute path to Y2 directory and so on ...
+# You must specify at least two directories
 arg_dirs = []
-temp_file_path = str(Path.home()) + "/asu_new_x_dir"
-
 n = len(sys.argv)
 if n < 3:
     print("Shutting down. Not enough input arguments :(")
@@ -34,7 +41,11 @@ if n < 3:
 for i in range(1, n):
     arg_dirs.append(str(sys.argv[i]))
 
+
+# A resulting directory will be created in the /home directory 
+# The name of that diresctory is /home/X_merged 
 print("Creating temp dir in /home")
+temp_file_path = str(Path.home()) + "/X_merged"
 try:
     os.mkdir(temp_file_path)
     print("Temp dir created")
@@ -42,10 +53,16 @@ except OSError as error:
     print("Error while creating temp file")
     sys.exit(0)
 
+
+# All files from X, Y1, Y2, ... are being coppied to /X_merged
+# If two files have the same name, the older file is deleted
+
 print("Adding all files to one dir")
 print("If two files have the same name, the older file is deleted")
 
 added_files = []
+
+# During copying, the file modification dates are remembered, which will be used later in the program 
 added_files_mod_dates = {}
 
 for dir in arg_dirs:
@@ -69,9 +86,11 @@ for dir in arg_dirs:
                     except:
                         print("Error occurred while copying file.")
                 else:
-
                     print("!!! NO COPY", os.path.join(path, name), temp_file_path)
 
+
+
+# Identical files are being deleted
 
 temp_files_list = []
 
@@ -97,7 +116,7 @@ for pair in pairs:
     except FileNotFoundError:
         pass
 
-
+# Empty and temporary files are being deleted
 print("Deleting empty and temporary files: ")
 for filename in os.listdir(temp_file_path):
     path_to_unwanted_file = os.path.join(temp_file_path, filename)
@@ -108,12 +127,16 @@ for filename in os.listdir(temp_file_path):
         print("Removing temp file: ", path_to_unwanted_file)
         os.remove(path_to_unwanted_file)
 
+
+
+# All files receive equal permissions 
 print("Changing permisions")
 for filename in os.listdir(temp_file_path):
     subprocess.call(["chmod", params["file_permissions"], os.path.join(temp_file_path, filename)])
 subprocess.call(["ls", "-l", "/home/jan/asu_new_x_dir"])
 
 
+# If the file name contains forbidden characters then they are removed 
 print("Changing filenames")
 for filename in os.listdir(temp_file_path):
     head, tail = os.path.os.path.splitext(filename)
