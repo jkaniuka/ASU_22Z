@@ -23,4 +23,4 @@ Y2_dir
 sample_video.gif - ZOSTAJE  
 the_same_name.txt - ta sama nazwa (1)  
   
-python3 sort_files.py /home/jan/studia/ASU/projekt/X_dir /home/jan/studia/ASU/projekt/Y1_dir /home/jan/studia/ASU/projekt/Y2_dir  
+python3 sort_files.py /home/jan/studia/ASU/ASU_22Z/X_dir /home/jan/studia/ASU/ASU_22Z/Y1_dir /home/jan/studia/ASU/ASU_22Z/Y2_dir  

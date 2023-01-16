@@ -65,8 +65,12 @@ added_files = []
 # During copying, the file modification dates are remembered, which will be used later in the program 
 added_files_mod_dates = {}
 
+# List of all dirs, subdirs, subsubdirs ... in X, Y1, Y2, ... directories
+subdirs_list = []
+
 for dir in arg_dirs:
     for path, subdirs, files in os.walk(dir):
+        subdirs_list.extend(subdirs)
         for name in files:
             if name not in added_files:
                 try:
@@ -150,3 +154,28 @@ for filename in os.listdir(temp_file_path):
     if filename != (result + tail):
         print('Rename: ', filename, " to: ", result + tail)
         os.rename(os.path.join(temp_file_path, filename), os.path.join(temp_file_path, result + tail))
+
+
+# Create subdirs to help organize files later 
+subdirs_set = set(subdirs_list) # Replace list with set to remove duplicates
+print("Creating subdirs in /X_merged")
+for subdir_name in subdirs_set:
+    try:
+        os.mkdir(temp_file_path + "/" + subdir_name)
+        print("/"+subdir_name, "dir created")
+    except OSError as error:
+        sys.exit(0)
+
+# Move X_merged to location of /X dir 
+original = temp_file_path
+target = os.path.dirname(arg_dirs[0])
+print('Moving /X_merged from: ', os.path.dirname(original), " to: ", target)
+shutil.move(original, target)
+
+# Delete the X directory (first arg must be the path to /X directory)
+print("Removing original X dir at:  ", os.path.dirname(arg_dirs[0]))
+shutil.rmtree(arg_dirs[0])
+
+# Rename /X_merged to /X 
+print("Renaming: ", target+'/X_merged', " to: ", target + "/" + os.path.basename(os.path.normpath(arg_dirs[0])))
+os.rename(target+'/X_merged', target + "/" + os.path.basename(os.path.normpath(arg_dirs[0])))
